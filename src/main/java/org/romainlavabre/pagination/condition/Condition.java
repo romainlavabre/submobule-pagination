@@ -28,6 +28,7 @@ public class Condition {
         OPERATOR.put( "contains", "LIKE" );
         OPERATOR.put( "necontains", "NOT LIKE" );
         OPERATOR.put( "startwith", "LIKE" );
+        OPERATOR.put( "endwith", "LIKE" );
         OPERATOR.put( "jsoncontains", "JSON_CONTAINS({column},{value})" );
         OPERATOR.put( "nejsoncontains", "!JSON_CONTAINS({column},{value})" );
     }
@@ -86,8 +87,8 @@ public class Condition {
                 final String parameter = "key" + keyIncrement++;
 
                 if ( !isFunction( operator ) ) {
-                    final String operator = this.getSqlOperator( this.values.get( i ), parameter );
-                    condition.append( ( customKey != null ? customKey : this.key ) + " " + operator + " " + this.getParameter( this.values.get( i ), operator, parameter ) );
+                    final String sqlOperator = this.getSqlOperator( this.values.get( i ), parameter );
+                    condition.append( ( customKey != null ? customKey : this.key ) + " " + sqlOperator + " " + this.getParameter( this.values.get( i ), operator, parameter ) );
                 } else {
                     condition.append( getFunction( values.get( i ), parameter, customKey ) );
                 }
@@ -130,6 +131,9 @@ public class Condition {
             return ":" + parameter;
         } else if ( operator.contains( "startwith" ) ) {
             this.parameters.put( parameter, value + "%" );
+            return ":" + parameter;
+        } else if ( operator.contains( "endwith" ) ) {
+            this.parameters.put( parameter, "%" + value );
             return ":" + parameter;
         } else if ( !value.toUpperCase().equals( "NULL" ) ) {
             this.parameters.put( parameter, value );

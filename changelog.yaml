@@ -1,1 +1,2 @@
+5.0.1: FIX Condition builder, provide the sql operator instead of pagination operator, contains HS
 5.0.0: fairfair-cloud/roadmap#16
