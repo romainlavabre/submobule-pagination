@@ -39,7 +39,8 @@ public class PaginationHandlerImpl implements PaginationHandler {
         final List< Condition > conditions = ConditionBuilder.getConditions( request );
         final Query             query      = queryBuilder.build( request, conditions, dtoType );
 
-        final int perPage = Integer.parseInt( request.getQueryString( "perPage" ) != null ? request.getQueryString( "perPage" ) : request.getQueryString( "per_page" ) );
+
+        final int perPage = Integer.parseInt( request.getQueryString( "per_page" ) );
         final int page    = Integer.parseInt( request.getQueryString( "page" ) );
         final int offset  = this.getOffset( perPage, page );
 
@@ -122,11 +123,15 @@ public class PaginationHandlerImpl implements PaginationHandler {
 
 
     protected void setDefaultRequiredValues( final Request request ) {
+        if ( request.getQueryString( "perPage" ) != null  ){
+            request.setQueryString( "per_page", request.getQueryString( "perPage" ) );
+        }
+
         if ( request.getQueryString( "per_page" ) == null ) {
             request.setQueryString( "per_page", "20" );
         }
 
-        if ( request.getQueryString( "page" ) == null ) {
+        if ( request.getQueryString( "page" ) == null || request.getQueryString( "page" ).equals( "0" )) {
             request.setQueryString( "page", "1" );
         }
 
