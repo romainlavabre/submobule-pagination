@@ -43,6 +43,8 @@ public class FileMode {
         QueryFileParser.ParsingResult parsingResult = queryFileParser.getFilter( pagination.filePath(), fileContent );
 
         StringBuilder conditionStr = new StringBuilder();
+        String mode = request.getQueryString( "mode" );
+        String keyword = !"include".equals( mode ) ? "AND" : "OR";
 
         for ( int i = 0; i < conditions.size(); i++ ) {
             final Condition condition = conditions.get( i );
@@ -50,16 +52,12 @@ public class FileMode {
             if ( i == 0 ) {
                 conditionStr.append( " " );
             } else {
-                String mode = request.getQueryString( "mode" );
 
-                if ( !"include".equals( mode ) ) {
-                    conditionStr.append( " AND " );
-                } else {
-                    conditionStr.append( " OR " );
-                }
+
+                conditionStr.append( " " + keyword + " " );
             }
 
-            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() ) ) );
+            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() ), keyword) );
 
             for ( final Map.Entry< String, String > entry : condition.getParameters().entrySet() ) {
                 query.addParameter( entry.getKey(), entry.getValue() );

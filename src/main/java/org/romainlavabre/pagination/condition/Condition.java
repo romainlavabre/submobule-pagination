@@ -75,7 +75,7 @@ public class Condition {
     }
 
 
-    public String consume( final int startIncrement, String customKey ) throws NotSupportedOperator, NotSupportedKey {
+    public String consume( final int startIncrement, String customKey, String joinKeyword ) throws NotSupportedOperator, NotSupportedKey {
 
         Constraint.assertValidKey( this.key );
 
@@ -95,7 +95,7 @@ public class Condition {
 
 
                 if ( i < this.values.size() - 1 ) {
-                    condition.append( " OR " );
+                    condition.append( " " + joinKeyword + " " );
                 }
             }
 

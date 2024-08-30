@@ -24,22 +24,19 @@ public class ViewMode {
             sqlQuery.append( " WHERE" );
         }
 
+        String mode = request.getQueryString( "mode" );
+        String keyword = !"include".equals( mode ) ? "AND" : "OR";
+
         for ( int i = 0; i < conditions.size(); i++ ) {
             final Condition condition = conditions.get( i );
 
             if ( i == 0 ) {
                 sqlQuery.append( " " );
             } else {
-                String mode = request.getQueryString( "mode" );
-
-                if ( !"include".equals( mode ) ) {
-                    sqlQuery.append( " AND " );
-                } else {
-                    sqlQuery.append( " OR " );
-                }
+                sqlQuery.append( " " + keyword + " " );
             }
 
-            sqlQuery.append( condition.consume( i + 1, null ) );
+            sqlQuery.append( condition.consume( i + 1, null, keyword ) );
 
             for ( final Map.Entry< String, String > entry : condition.getParameters().entrySet() ) {
                 query.addParameter( entry.getKey(), entry.getValue() );
