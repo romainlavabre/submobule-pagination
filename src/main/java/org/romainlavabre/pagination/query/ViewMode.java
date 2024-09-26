@@ -36,7 +36,7 @@ public class ViewMode {
                 sqlQuery.append( " " + keyword + " " );
             }
 
-            sqlQuery.append( condition.consume( i + 1, null, keyword ) );
+            sqlQuery.append( condition.consume( i + 1, null ) );
 
             for ( final Map.Entry< String, String > entry : condition.getParameters().entrySet() ) {
                 query.addParameter( entry.getKey(), entry.getValue() );

@@ -22,7 +22,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 = :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 = :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 != :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 != :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -46,7 +46,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 > :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 > :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -58,7 +58,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 < :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 < :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -70,7 +70,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 >= :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 >= :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
 
@@ -83,7 +83,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 <= :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 <= :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -95,7 +95,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -107,7 +107,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 NOT LIKE :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 NOT LIKE :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -119,7 +119,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 LIKE :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "JSON_CONTAINS(column_1,:key1000)", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "JSON_CONTAINS(column_1,:key1000)", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -155,7 +155,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "!JSON_CONTAINS(column_1,:key1000)", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "!JSON_CONTAINS(column_1,:key1000)", conditions.get( 0 ).consume( 1, null ) );
     }
 
 
@@ -169,8 +169,8 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(2, conditions.size());
-        Assert.assertEquals( "column_1 = :key1000", conditions.get( 1 ).consume( 1, null, "AND" ) );
-        Assert.assertEquals( "column_2 != :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "column_1 = :key1000", conditions.get( 1 ).consume( 1, null ) );
+        Assert.assertEquals( "column_2 != :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
 
@@ -183,7 +183,7 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "ST_DISTANCE_SPHERE(column_1, POINT(3.563467,-5.563467)) > :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "ST_DISTANCE_SPHERE(column_1, POINT(3.563467,-5.563467)) > :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 
     @Test
@@ -195,6 +195,6 @@ public class ConditionTest {
         List<Condition> conditions = ConditionBuilder.getConditions( request );
 
         Assert.assertEquals(1, conditions.size());
-        Assert.assertEquals( "ST_DISTANCE_SPHERE(column_1, POINT(3.563467,-5.563467)) < :key1000", conditions.get( 0 ).consume( 1, null, "AND" ) );
+        Assert.assertEquals( "ST_DISTANCE_SPHERE(column_1, POINT(3.563467,-5.563467)) < :key1000", conditions.get( 0 ).consume( 1, null ) );
     }
 }

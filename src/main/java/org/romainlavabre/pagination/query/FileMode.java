@@ -57,7 +57,7 @@ public class FileMode {
                 conditionStr.append( " " + keyword + " " );
             }
 
-            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() ), keyword) );
+            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() )) );
 
             for ( final Map.Entry< String, String > entry : condition.getParameters().entrySet() ) {
                 query.addParameter( entry.getKey(), entry.getValue() );
