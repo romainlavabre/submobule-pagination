@@ -34,6 +34,7 @@ public class QueryFileParser {
             if ( i == asPart.length - 1 ) {
                 break;
             }
+
             String formula =
                     i == 0
                             ? asPart[ i ].trim()
@@ -41,8 +42,6 @@ public class QueryFileParser {
             String key = asPart[ i + 1 ].replaceFirst( ",", "--split--" ).split( "--split--" )[ 0 ].trim();
 
             filters.put( key, formula );
-
-
         }
 
         ParsingResult parsingResult = new ParsingResult( filters );

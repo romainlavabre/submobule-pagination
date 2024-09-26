@@ -1,3 +1,4 @@
+5.1.0: ADD ST_DISTANCE_SPHERE function (distancesup & distanceinf)
 5.0.3: FIX JKoin keyword
 5.0.2: FIX Default parameters
 5.0.1: FIX Condition builder, provide the sql operator instead of pagination operator, contains HS

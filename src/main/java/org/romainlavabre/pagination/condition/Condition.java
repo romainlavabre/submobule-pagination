@@ -4,6 +4,7 @@ package org.romainlavabre.pagination.condition;
 import org.romainlavabre.pagination.Constraint;
 import org.romainlavabre.pagination.exception.NotSupportedKey;
 import org.romainlavabre.pagination.exception.NotSupportedOperator;
+import org.romainlavabre.pagination.exception.NotSupportedValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class Condition {
         OPERATOR.put( "endwith", "LIKE" );
         OPERATOR.put( "jsoncontains", "JSON_CONTAINS({column},{value})" );
         OPERATOR.put( "nejsoncontains", "!JSON_CONTAINS({column},{value})" );
+        OPERATOR.put( "distancesup", "ST_DISTANCE_SPHERE({column}, POINT({lng,lat})) > {value}" );
+        OPERATOR.put( "distanceinf", "ST_DISTANCE_SPHERE({column}, POINT({lng,lat})) < {value}" );
     }
 
     private final String key;
@@ -75,7 +78,7 @@ public class Condition {
     }
 
 
-    public String consume( final int startIncrement, String customKey, String joinKeyword ) throws NotSupportedOperator, NotSupportedKey {
+    public String consume( final int startIncrement, String customKey, String joinKeyword ) throws NotSupportedOperator, NotSupportedKey, NotSupportedValue {
 
         Constraint.assertValidKey( this.key );
 
@@ -144,17 +147,37 @@ public class Condition {
     }
 
 
-    private String getFunction( String value, String parameter, String customKey ) throws NotSupportedOperator {
+    private String getFunction( String value, String parameter, String customKey ) throws NotSupportedOperator, NotSupportedValue {
         if ( !Condition.OPERATOR.containsKey( this.operator ) ) {
             throw new NotSupportedOperator( this.operator );
         }
 
+
+        if ( operator.contains( "distance" ) ) {
+            if ( !value.matches( "^[0-9-.]+,[0-9-.]+;[0-9]+$" ) ) {
+                throw new NotSupportedValue( this.key, value );
+            }
+
+            this.parameters.put( parameter, value.split( ";" )[1] );
+
+            return Condition.OPERATOR
+                    .get( this.operator )
+                    .replace( "{column}", customKey != null ? customKey : this.key )
+                    .replace( "{lng,lat}", value.split( ";" )[0] )
+                    .replace( "{value}", ":" + parameter );
+        }
+
         this.parameters.put( parameter, value );
-        return Condition.OPERATOR.get( this.operator ).replace( "{column}", customKey != null ? customKey : this.key ).replace( "{value}", ":" + parameter );
+
+        return Condition.OPERATOR
+                .get( this.operator )
+                .replace( "{column}", customKey != null ? customKey : this.key )
+                .replace( "{value}", ":" + parameter );
     }
 
 
     private boolean isFunction( String operator ) {
-        return operator.contains( "json" );
+        return operator.contains( "json" )
+                || operator.contains( "distance" );
     }
 }

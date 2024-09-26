@@ -15,19 +15,26 @@ And finally, specify the identifier with @Id. But you already know all this ...
 ```java
 import com.replace.replace.api.json.annotation.Group;
 import com.replace.replace.api.json.annotation.Json;
+import org.antlr.v4.runtime.atn.SemanticContext;
 import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.romainlavabre.pagination.annotation.ModeType;
+import org.romainlavabre.pagination.annotation.Pagination;
 
 
 /**
  * @author Romain Lavabre <romainlavabre98@gmail.com>
  */
+@Pagination( mode = ModeType.FILE, filePath = "classpath:sql/your-sql-file.sql" )
+// OR 
+@Pagination( mode = ModeType.VIEW, view = "company_pagination")
 @Entity
 @Immutable
 @Table( name = "company_pagination" )
+
 public class Company {
 
     @Json( groups = {
@@ -49,6 +56,25 @@ public class Company {
 You will notice that the @Immutable annotation is specific to hibernate.
 
 If you are using another implementation, you need to find an alternative
+
+#### Mode file or view
+
+You can build your query in file or view 
+
+##### File 
+
+```sql
+SELECT
+    T.id AS id,
+    T.col_1 AS col_1,
+FROM table T
+WHERE {{condition}}
+```
+> Your files are loaded by ResourceLoader
+
+##### View
+
+Create an sql view ...
 
 ### Controller
 
@@ -94,7 +120,7 @@ public class PaginationController {
         Pagination pagination;
 
         try {
-            pagination = paginationBuilder.getResult( request, Company.class, "company_pagination" );
+            pagination = paginationBuilder.getResult( request, Company.class );
         } catch ( NotSupportedOperator | NotSupportedKey | NotSupportedValue e ) {
             throw new HttpUnprocessableEntityException( e.getMessage() );
         }
@@ -126,13 +152,13 @@ field[operator]=value
         <th>Default</th>
     </tr>
     <tr>
-        <td>sortBy</td>
+        <td>sort_by</td>
         <td>fields to sort on</td>
         <td>id</td>
     </tr>
     <tr>
-        <td>orderBy</td>
-        <td>Sense of sort, ASC | DESC. Case insensitive</td>
+        <td>order_by</td>
+        <td>Sort direction, ASC | DESC. Case insensitive</td>
         <td>DESC</td>
     </tr>
     <tr>
@@ -185,6 +211,30 @@ field[operator]=value
     <tr>
         <td>necontains</td>
         <td>NOT LIKE</td>
+    </tr>
+    <tr>
+        <td>startwith</td>
+        <td>LIKE "value%"</td>
+    </tr>
+    <tr>
+        <td>endwith</td>
+        <td>LIKE "%value"</td>
+    </tr>
+    <tr>
+        <td>jsoncontains</td>
+        <td>JSON_CONTAINS({column},{value})</td>
+    </tr>
+    <tr>
+        <td>nejsoncontains</td>
+        <td>!JSON_CONTAINS({column},{value})</td>
+    </tr>
+    <tr>
+        <td>distancesup</td>
+        <td>ST_DISTANCE({column}, POINT({lng,lat})) > {value}</td>
+    </tr>
+    <tr>
+        <td>distanceinf</td>
+        <td>ST_DISTANCE({column}, POINT({lng,lat})) < {value}</td>
     </tr>
 </table>
 
@@ -243,10 +293,18 @@ Exemple:
         <td>id[eq]=10 & id[eq]=11 & language[contains]=java</td>
         <td>WHERE (id = 10 OR id = 11) AND language LIKE "%java%"</td>
     </tr>
+    <tr>
+        <td>coordinate[distancesup]=3.563467,-5.563467;300</td>
+        <td>WHERE ST_DISTANCE(coordinate, POINT(3.563467,-5.563467)) > 300</td>
+    </tr>
 </table>
 
 
-Warning ! The parameters must be encoded, at the risk of receiving a 400 error
+Warning! The parameters must be encoded, at the risk of receiving a 400 error
+
+> /!\ Distance function: Your column (coordinate in sample) must be of POINT type 
+
+
 
 ### Requirements
 
@@ -261,7 +319,7 @@ Warning ! The parameters must be encoded, at the risk of receiving a 400 error
 
 ##### 1.0.1
 
-- ADD Support snack & camel case parameters
+- ADD Support snake & camel case parameters
 
 ##### 1.0.0
 
