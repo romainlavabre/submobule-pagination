@@ -2,14 +2,19 @@ package org.romainlavabre.pagination.query.file;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class QueryFileParser {
 
     private final Map< String, ParsingResult >    CACHE                   = new HashMap<>();
     private final Map< String, KeywordsPosition > KEYWORDS_POSITION_CACHE = new HashMap<>();
+    private       Map< String, List< String > >   VARIABLES               = new HashMap<>();
 
 
     /**
@@ -49,6 +54,26 @@ public class QueryFileParser {
         CACHE.put( filePath, parsingResult );
 
         return parsingResult;
+    }
+
+
+    public List< String > getVariables( String filePath, String fileContent ) {
+        if ( VARIABLES.get( filePath ) != null ) {
+            return VARIABLES.get( filePath );
+        }
+
+        List< String > variables = new ArrayList<>();
+
+        VARIABLES.put( filePath, variables );
+
+        Pattern pat = Pattern.compile( ":[a-zA-Z0-9_]+" );
+        Matcher m   = pat.matcher( fileContent );
+
+        while ( m.find() ) {
+            variables.add( m.group().replace( ":", "" ).trim() );
+        }
+
+        return variables;
     }
 
 

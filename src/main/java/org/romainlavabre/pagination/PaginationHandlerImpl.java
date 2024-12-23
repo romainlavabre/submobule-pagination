@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 public class PaginationHandlerImpl implements PaginationHandler {
 
-    protected final EntityManager entityManager;
+    protected final EntityManager             entityManager;
     protected final QueryBuilder              queryBuilder;
     protected final Map< String, QueryCount > COUNT_QUERY_CACHE = new HashMap<>();
 
@@ -85,7 +85,7 @@ public class PaginationHandlerImpl implements PaginationHandler {
 
         for ( final Map.Entry< String, String > entry : query.getParameters().entrySet() ) {
             persistentQuery.setParameter( entry.getKey(), entry.getValue() );
-            computedQuery = computedQuery.replace( ":" + entry.getKey(), entry.getValue() );
+            computedQuery = computedQuery.replace( ":" + entry.getKey(), entry.getValue() == null ? "NULL" : entry.getValue() );
         }
 
 
@@ -123,7 +123,7 @@ public class PaginationHandlerImpl implements PaginationHandler {
 
 
     protected void setDefaultRequiredValues( final Request request ) {
-        if ( request.getQueryString( "perPage" ) != null  ){
+        if ( request.getQueryString( "perPage" ) != null ) {
             request.setQueryString( "per_page", request.getQueryString( "perPage" ) );
         }
 
@@ -131,7 +131,7 @@ public class PaginationHandlerImpl implements PaginationHandler {
             request.setQueryString( "per_page", "20" );
         }
 
-        if ( request.getQueryString( "page" ) == null || request.getQueryString( "page" ).equals( "0" )) {
+        if ( request.getQueryString( "page" ) == null || request.getQueryString( "page" ).equals( "0" ) ) {
             request.setQueryString( "page", "1" );
         }
 

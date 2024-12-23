@@ -30,7 +30,7 @@ import org.romainlavabre.pagination.annotation.Pagination;
  */
 @Pagination( mode = ModeType.FILE, filePath = "classpath:sql/your-sql-file.sql" )
 // OR 
-@Pagination( mode = ModeType.VIEW, view = "company_pagination")
+@Pagination( mode = ModeType.VIEW, view = "company_pagination" )
 @Entity
 @Immutable
 @Table( name = "company_pagination" )
@@ -59,9 +59,9 @@ If you are using another implementation, you need to find an alternative
 
 #### Mode file or view
 
-You can build your query in file or view 
+You can build your query in file or view
 
-##### File 
+##### File
 
 ```sql
 SELECT
@@ -70,6 +70,7 @@ SELECT
 FROM table T
 WHERE {{condition}}
 ```
+
 > Your files are loaded by ResourceLoader
 
 ##### View
@@ -302,9 +303,27 @@ Exemple:
 
 Warning! The parameters must be encoded, at the risk of receiving a 400 error
 
-> /!\ Distance function: Your column (coordinate in sample) must be of POINT type 
+> /!\ Distance function: Your column (coordinate in sample) must be of POINT type
 
+#### Advanced
 
+In a few cases, you have to provide a specific variable. You can do this with simple named parameters.
+
+In your query:
+
+```sql
+WHERE IF(:my_named_parameter IS NOT NULL, col = :my_named_parameter : 1)
+```
+
+And in your query strings:
+
+?pgvar_my_named_parameter=50
+
+> /!\ All variables must be start with "pgvar"
+
+> /!\ The named parameter accepts the syntax A-Za-z0-9_
+
+> /!\ If the value is not provided or it is a null string, the default value will be NULL
 
 ### Requirements
 

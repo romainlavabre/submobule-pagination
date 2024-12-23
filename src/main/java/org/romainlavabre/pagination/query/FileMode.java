@@ -7,6 +7,7 @@ import org.romainlavabre.pagination.exception.NotSupportedKey;
 import org.romainlavabre.pagination.exception.NotSupportedOperator;
 import org.romainlavabre.pagination.exception.NotSupportedValue;
 import org.romainlavabre.pagination.query.file.QueryFileParser;
+import org.romainlavabre.pagination.query.file.Variable;
 import org.romainlavabre.request.Request;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -16,18 +17,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class FileMode {
     protected final Map< String, String > FILE_CACHE = new HashMap<>();
-    protected final ResourceLoader  resourceLoader;
-    protected final QueryFileParser queryFileParser;
+    protected final ResourceLoader        resourceLoader;
+    protected final QueryFileParser       queryFileParser;
 
 
     public FileMode( ResourceLoader resourceLoader, QueryFileParser queryFileParser ) {
@@ -43,8 +42,8 @@ public class FileMode {
         QueryFileParser.ParsingResult parsingResult = queryFileParser.getFilter( pagination.filePath(), fileContent );
 
         StringBuilder conditionStr = new StringBuilder();
-        String mode = request.getQueryString( "mode" );
-        String keyword = !"include".equals( mode ) ? "AND" : "OR";
+        String        mode         = request.getQueryString( "mode" );
+        String        keyword      = !"include".equals( mode ) ? "AND" : "OR";
 
         for ( int i = 0; i < conditions.size(); i++ ) {
             final Condition condition = conditions.get( i );
@@ -57,11 +56,15 @@ public class FileMode {
                 conditionStr.append( " " + keyword + " " );
             }
 
-            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() )) );
+            conditionStr.append( condition.consume( i + 1, parsingResult.getFilters().get( condition.getKey() ) ) );
 
             for ( final Map.Entry< String, String > entry : condition.getParameters().entrySet() ) {
                 query.addParameter( entry.getKey(), entry.getValue() );
             }
+        }
+
+        for ( Variable variable : getVariables( request, pagination.filePath(), fileContent ) ) {
+            query.addParameter( variable.getName(), variable.getValue() );
         }
 
         fileContent = queryFileParser.putCondition( conditionStr.toString(), fileContent );
@@ -121,5 +124,49 @@ public class FileMode {
         FILE_CACHE.put( filePath, fileContent );
 
         return fileContent;
+    }
+
+
+    private List< Variable > getVariables( Request request, String filePath, String fileContent ) throws FileError {
+        final List< Variable > result      = new ArrayList<>();
+        final String           queryString = request.getRawQueryString();
+
+        if ( queryString == null ) {
+            return result;
+        }
+
+        final String[] queryStrings = queryString.split( "&" );
+
+        List< String > defined = new ArrayList<>();
+
+        for ( int i = 0; i < queryStrings.length; i++ ) {
+            queryStrings[ i ] = URLDecoder.decode( queryStrings[ i ], StandardCharsets.UTF_8 );
+
+            if ( !queryStrings[ i ].startsWith( "pgvar_" ) ) {
+                continue;
+            }
+
+            String name  = queryStrings[ i ].replaceFirst( "pgvar_", "" ).split( "=" )[ 0 ];
+            String value = queryStrings[ i ].split( "=" )[ 1 ];
+
+            defined.add( name );
+
+            result.add(
+                    new Variable(
+                            name,
+                            value == null || value.toLowerCase().equals( "null" ) ? null : value
+                    )
+            );
+        }
+
+        for ( String variable : queryFileParser.getVariables( filePath, fileContent ) ) {
+            if ( defined.contains( variable ) ) {
+                continue;
+            }
+
+            result.add( new Variable( variable, null ) );
+        }
+
+        return result;
     }
 }

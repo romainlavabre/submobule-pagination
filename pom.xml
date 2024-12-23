@@ -6,7 +6,7 @@
 
     <groupId>org.romainlavabre</groupId>
     <artifactId>pagination</artifactId>
-    <version>5.1.1</version>
+    <version>5.2.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -116,4 +116,10 @@
             <url>s3://fairfair-maven-repository</url>
         </repository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>fairfair-maven-repository</id>
+            <url>https://fairfair-maven-repository.s3.eu-west-3.amazonaws.com</url>
+        </repository>
+    </repositories>
 </project>
