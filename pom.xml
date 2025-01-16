@@ -6,7 +6,7 @@
 
     <groupId>org.romainlavabre</groupId>
     <artifactId>pagination</artifactId>
-    <version>5.2.0</version>
+    <version>5.3.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

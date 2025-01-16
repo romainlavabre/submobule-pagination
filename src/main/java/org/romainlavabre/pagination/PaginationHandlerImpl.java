@@ -40,23 +40,31 @@ public class PaginationHandlerImpl implements PaginationHandler {
         final Query             query      = queryBuilder.build( request, conditions, dtoType );
 
 
-        final int perPage = Integer.parseInt( request.getQueryString( "per_page" ) );
-        final int page    = Integer.parseInt( request.getQueryString( "page" ) );
-        final int offset  = this.getOffset( perPage, page );
+        final int     perPage         = Integer.parseInt( request.getQueryString( "per_page" ) );
+        final int     page            = Integer.parseInt( request.getQueryString( "page" ) );
+        final boolean dynamicCounting = Boolean.parseBoolean( request.getQueryString( "dynamic_counting" ) );
+        final int     offset          = this.getOffset( perPage, page );
 
         final Pagination pagination = new Pagination();
         pagination
                 .setPerPage( perPage )
-                .setTotal( this.executeCountQuery( query ) )
+                .setTotal( dynamicCounting ? offset + perPage : this.executeCountQuery( query ) )
                 .setFrom( query.getOffset() + 1 )
                 .setTo( query.getOffset() + query.getLimit() > pagination.getTotal() ? Integer.parseInt( String.valueOf( pagination.getTotal() ) ) : query.getOffset() + query.getLimit() )
                 .setCurrentPage( page )
-                .setLastPage( this.getLastPage( perPage, pagination.getTotal() ) );
+                .setLastPage( dynamicCounting ? page + 1 : this.getLastPage( perPage, pagination.getTotal() ) );
 
         query.setOffset( offset );
         query.setLimit( pagination.getTo() );
 
         pagination.setData( this.executeDataQuery( query, ( Class ) dtoType ) );
+
+        if ( pagination.getData().size() < perPage ) {
+            pagination
+                    .setLastPage( page )
+                    .setTotal( offset - perPage + pagination.getData().size() )
+                    .setTo( offset - perPage + pagination.getData().size() );
+        }
 
 
         return pagination;
